@@ -1,5 +1,8 @@
 ﻿namespace CLP;
 
+/// <summary>
+/// Represents all valid types for an <seealso cref="Argument"/>.
+/// </summary>
 public enum ArgumentType
 {
     /// <summary>

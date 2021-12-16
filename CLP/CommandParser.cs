@@ -2,6 +2,9 @@
 
 namespace CLP;
 
+/// <summary>
+/// The command parser.
+/// </summary>
 public sealed class CommandParser
 {
     private readonly string _text;

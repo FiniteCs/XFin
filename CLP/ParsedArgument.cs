@@ -1,5 +1,8 @@
 ﻿namespace CLP;
 
+/// <summary>
+/// Represents a parsed argument.
+/// </summary>
 public sealed class ParsedArgument
 {
     internal ParsedArgument(Argument argument, string text, object value)
