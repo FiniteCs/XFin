@@ -8,8 +8,8 @@ internal static class Program
     {
         Command[] commands =
         {
-             new("-", "Cmd", null, new Argument(ArgumentType.Double), new Argument(ArgumentType.String)),
-             new(":", "Cmd1", "-", new Argument(ArgumentType.Int8), new Argument(ArgumentType.Double))
+             new("-", "Cmd", null, new Argument(ArgumentType.Double, "Arg1"), new Argument(ArgumentType.String, "Arg2")),
+             new(":", "Cmd1", "-", new Argument(ArgumentType.Int8, "Arg1"), new Argument(ArgumentType.Double, "Arg2"))
         };
 
         string s = Console.ReadLine();
