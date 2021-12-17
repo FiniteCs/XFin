@@ -18,8 +18,8 @@ public sealed class Command
     /// <param name="arguments"></param>
     public Command(string prefix, string cmd, string suffix, params Argument[] arguments)
     {
-        Prefix = Cmd = prefix;
-        Cmd += cmd + suffix;
+        Prefix = prefix;
+        Cmd = prefix + cmd + suffix;
         Suffix = suffix;
         Arguments = arguments;
     }
