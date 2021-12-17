@@ -9,7 +9,7 @@ public sealed class CommandParser
 {
     private readonly string _text;
     private int _position;
-    private List<string> _diagnostics;
+    private readonly List<string> _diagnostics;
 
     public CommandParser(string text)
     {
@@ -30,6 +30,11 @@ public sealed class CommandParser
 
     private char Current => Peek(0);
 
+    /// <summary>
+    /// Parse a command from the text
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
     public ParsedCommand Parse(Command command)
     {
         if (Current == command.Cmd[0])
@@ -96,13 +101,30 @@ public sealed class CommandParser
 
         if (Current == '\"')
         {
+            // Skip the quote
             _position++;
             start = _position;
             while (Current != '\"')
+            {
+                if (Current == '\0')
+                {
+                    _diagnostics.Add($"Unterminated string.");
+                    return null;
+                }
                 _position++;
+            }
 
             int length = _position - start;
             string text = _text.Substring(start, length);
+
+            // Skip the quote
+            _position++;
+
+            if (argument.ArgumentType != ArgumentType.String)
+            {
+                _diagnostics.Add($"Invalid argument type {ArgumentType.String} expected {argument.ArgumentType}.");
+                return null;
+            }
             return new ParsedArgument(argument, text, text);
         }
 
@@ -112,6 +134,18 @@ public sealed class CommandParser
             while (char.IsDigit(Current) ||
                   (Current == '.' && pointFound == false))
                 _position++;
+
+            if (pointFound &&
+                argument.ArgumentType.IsInteger())
+            {
+                _diagnostics.Add($"Result type is a pointed value, where {argument.ArgumentType} is an integer.");
+                return null;
+            }
+            else if (argument.ArgumentType == ArgumentType.String)
+            {
+                _diagnostics.Add($"Invalid argument type {argument.ArgumentType} expected {ArgumentType.String}.");
+                return null;
+            }
 
             int length = _position - start;
             string text = _text.Substring(start, length);
@@ -187,6 +221,27 @@ public sealed class CommandParser
             default:
                 _diagnostics.Add($"Failed to parse value '{text}'");
                 return null;
+        }
+    }
+}
+
+public static class Extentions
+{
+    public static bool IsInteger(this ArgumentType type)
+    {
+        switch (type)
+        {
+            case ArgumentType.Int8:
+            case ArgumentType.Int16:
+            case ArgumentType.Int32:
+            case ArgumentType.Int64:
+            case ArgumentType.Uint8:
+            case ArgumentType.Uint16:
+            case ArgumentType.Uint32:
+            case ArgumentType.Uint64:
+                return true;
+            default:
+                return false;
         }
     }
 }
