@@ -19,7 +19,7 @@ public sealed class CommandParser
     }
 
     /// <summary>
-    /// The errors the parser reports
+    /// The errors the parser reports.
     /// </summary>
     public ImmutableArray<string> Diagnostics => _diagnostics.ToImmutableArray();
 
@@ -35,7 +35,7 @@ public sealed class CommandParser
     private char Current => Peek(0);
 
     /// <summary>
-    /// Parse a command from the text
+    /// Parses <paramref name="command"/> and it's arguments.
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
@@ -44,6 +44,45 @@ public sealed class CommandParser
         _fromArray = false;
         return Parse_(command);
     }
+
+    /// <summary>
+    /// Continues to go through the <paramref name="commands"/> until it matches the command in the ctor text.
+    /// </summary>
+    /// <param name="commands"></param>
+    /// <returns><see langword="null"/> if no commands match.</returns>
+    public ParsedCommand Parse(Command[] commands) => Parse(commands.ToImmutableArray());
+
+    /// <summary>
+    /// Continues to go through the <paramref name="commands"/> until it matches the command in the ctor text.
+    /// </summary>
+    /// <param name="commands"></param>
+    /// <returns><see langword="null"/> if no commands match.</returns>
+    public ParsedCommand Parse(ImmutableArray<Command> commands)
+    {
+        _fromArray = true;
+        ParsedCommand parsedCommand = null;
+        int pos = _position;
+        foreach (var command in commands)
+        {
+            parsedCommand = Parse_(command);
+            if (parsedCommand == null)
+            {
+                _position = pos;
+                continue;
+            }
+
+            break;
+        }
+
+        return parsedCommand;
+    }
+
+    /// <summary>
+    /// Continues to go through the <paramref name="commands"/> until it matches the command in the ctor text.
+    /// </summary>
+    /// <param name="commands"></param>
+    /// <returns><see langword="null"/> if no commands match.</returns>
+    public ParsedCommand Parse(IEnumerable<Command> commands) => Parse(commands.ToImmutableArray());
 
     private ParsedCommand Parse_(Command command)
     {
@@ -102,45 +141,6 @@ public sealed class CommandParser
 
         return new ParsedCommand(command, parsedArguments.ToImmutableArray());
     }
-
-    /// <summary>
-    /// Continues to go through the <paramref name="commands"/> until it matches the command in the ctor text.
-    /// </summary>
-    /// <param name="commands"></param>
-    /// <returns><see langword="null"/> if no commands match.</returns>
-    public ParsedCommand Parse(Command[] commands) => Parse(commands.ToImmutableArray());
-
-    /// <summary>
-    /// Continues to go through the <paramref name="commands"/> until it matches the command in the ctor text.
-    /// </summary>
-    /// <param name="commands"></param>
-    /// <returns><see langword="null"/> if no commands match.</returns>
-    public ParsedCommand Parse(ImmutableArray<Command> commands)
-    {
-        _fromArray = true;
-        ParsedCommand parsedCommand = null;
-        int pos = _position;
-        foreach (var command in commands)
-        {
-            parsedCommand = Parse_(command);
-            if (parsedCommand == null)
-            {
-                _position = pos;
-                continue;
-            }
-
-            break;
-        }
-
-        return parsedCommand;
-    }
-
-    /// <summary>
-    /// Continues to go through the <paramref name="commands"/> until it matches the command in the ctor text.
-    /// </summary>
-    /// <param name="commands"></param>
-    /// <returns><see langword="null"/> if no commands match.</returns>
-    public ParsedCommand Parse(IEnumerable<Command> commands) => Parse(commands.ToImmutableArray());
 
     private ParsedArgument ParseArgument(Argument argument)
     {
