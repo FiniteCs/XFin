@@ -55,4 +55,10 @@ public sealed class Command
     /// The command's arguments
     /// </summary>
     public Argument[] Arguments { get; }
+
+    public ParsedCommand Parse(string text)
+    {
+        CommandParser commandParser = new(text);
+        return commandParser.Parse(this);
+    }
 }
