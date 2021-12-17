@@ -6,7 +6,7 @@ internal static class Program
 {
     private static void Main()
     {
-        Command command = new("DoSum", new Argument(ArgumentType.Double), new Argument(ArgumentType.String));
+        Command command = new("-", "Cmd", null, new Argument(ArgumentType.Double), new Argument(ArgumentType.String));
 
         string s = Console.ReadLine();
         CommandParser parser = new(s);
